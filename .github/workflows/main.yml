@@ -1,14 +1,31 @@
+name: Deploy Hugging Face Space
+
+# O workflow será acionado em todo push para a branch 'main'.
+on:
+  push:
+    branches:
+      - main 
+
+# Define permissão de escrita para o checkout e sincronização.
+permissions:
+  contents: write
+
 jobs:
   sync-space:
     runs-on: ubuntu-latest
     
     steps:
+      # Passo 1: Clona o seu repositório GitHub
       - name: Checkout Repository
         uses: actions/checkout@v4
         
+      # Passo 2: Sincroniza o conteúdo com o Space do Hugging Face.
+      # Usando a versão @v1 para evitar o erro de 'expected boolean, received string'.
       - name: Sync to Hugging Face Space
-        uses: nateraw/huggingface-sync-action@v1 # Atualizado para v1
+        uses: nateraw/huggingface-sync-action@v1 
         with:
+          # O ID do seu Space no formato 'nome-usuario/nome-do-space'
           huggingface_repo_id: willp01/projeto001
+          
+          # O Token de Acesso do Hugging Face (Secret do GitHub)
           hf_token: ${{ secrets.HF }}
-          private: false
