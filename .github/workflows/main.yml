@@ -1,10 +1,12 @@
 name: Deploy Hugging Face Space
 
+# O workflow será acionado em todo push para a branch 'main'.
 on:
   push:
     branches:
       - main 
 
+# Define permissão de escrita para o checkout e sincronização.
 permissions:
   contents: write
 
@@ -13,39 +15,37 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+      # 1. Checkout do seu repositório GitHub
       - name: Checkout Repository
         uses: actions/checkout@v4
         
+      # 2. Configura o Python (necessário para instalar o hf-cli)
       - name: Set up Python 3.x
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
 
+      # 3. Instala a biblioteca Hugging Face Hub (que contém o hf-cli)
       - name: Install Hugging Face Hub
         run: pip install huggingface-hub
 
-      # --- NOVO PASSO: Adiciona o diretório de executáveis do pip ao PATH ---
-      # O $HOME é uma variável de ambiente que aponta para o diretório do usuário.
-      # Este comando adiciona o diretório de binários de instalação do pip ao PATH.
-      - name: Install Hugging Face Hub
-        # Remova o 'pip install huggingface-hub'.
-        # Use um comando mais explícito para garantir a instalação no PATH do ambiente virtual.
-        run: |
-          python -m pip install --upgrade pip
-          pip install huggingface-hub
-          
-      - name: Sync to Hugging Face Space using hf-cli (FINAL)
+      # 4. Sincroniza o repositório via Hugging Face CLI
+      - name: Sync to Hugging Face Space using hf-cli
         env:
+          # Define as variáveis de ambiente necessárias
           HF_TOKEN: ${{ secrets.HF }}
-          REPO_ID: willp01/projeto001
+          REPO_ID: willp01/projeto001 # Seu Space ID
         run: |
-          # Agora o comando 'huggingface-cli' será encontrado!
-          huggingface-cli login --token $HF_TOKEN
+          # Define o caminho absoluto do executável hf-cli usando a variável de ambiente do GA
+          HF_CLI_PATH="${{ env.pythonLocation }}/bin/huggingface-cli"
+          
+          echo "Caminho CLI detectado: $HF_CLI_PATH"
+          
+          # Faz login no Hugging Face (usa o HF_TOKEN)
+          $HF_CLI_PATH login --token $HF_TOKEN
 
-          huggingface-cli create-repo $REPO_ID --type space --space-sdk gradio || echo "Repo already exists"
+          # Cria o repositório (se não existir). O erro de 'private' é evitado aqui.
+          $HF_CLI_PATH create-repo $REPO_ID --type space --space-sdk gradio || echo "Repo already exists"
 
-          huggingface-cli upload $REPO_ID . --include "*" --exclude ".git*"
-      
-           # Comando de upload (pode ser o que está causando o erro, use o módulo)
-          python -m huggingface_hub upload $REPO_ID . --include "*" --exclude ".git*"
-  
+          # Sincroniza os arquivos locais (do GitHub) para o Space.
+          $HF_CLI_PATH upload $REPO_ID . --include "*" --exclude ".git*"
