@@ -35,8 +35,8 @@ jobs:
           HF_TOKEN: ${{ secrets.HF }}
           REPO_ID: willp01/projeto001 # Seu Space ID
         run: |
-          # 4a. Faz login no Hugging Face (usa o HF_TOKEN)
-          huggingface-cli login --token $HF_TOKEN
+          # 4a. Faz login no Hugging Face (usa o HF)
+          huggingface-cli login --token $HF
 
           # 4b. Cria o repositório (se não existir). 
           # O erro de 'private' é evitado aqui, pois o hf-cli lida com isso corretamente.
