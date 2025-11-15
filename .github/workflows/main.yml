@@ -33,9 +33,22 @@ jobs:
           # O Token de Acesso do Hugging Face. Deve ser uma Secret do GitHub.
           # Você deve criar uma Secret no seu repositório chamada HF_TOKEN.
           hf_token: ${{ secrets.HF }} 
-          
-          # --- OPCIONAL ---
-          # Se você precisar sincronizar APENAS um subdiretório do seu GitHub
-          # com a raiz do seu Space, use a opção 'folder_to_sync'.
-          # Por padrão, sincroniza a raiz do GitHub.
-          # folder_to_sync: ./chatbot_folder
+
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x' # Defina a versão que você usa
+
+# --- ADICIONE ESTES PASSOS ---
+
+      - name: 📦 Instalar Dependências
+        run: |
+          python -m pip install --upgrade pip
+          # Assumindo que você tem um arquivo requirements.txt
+          pip install -r requirements.txt
+
+      - name: 🚀 Executar Script e Fazer Upload
+        run: |
+          # Este é o comando que executa o seu código principal
+          python seu_script_principal.py # Substitua pelo nome real do seu script
