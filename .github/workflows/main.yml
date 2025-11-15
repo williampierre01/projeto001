@@ -27,7 +27,7 @@ jobs:
           # --- OBRIGATÓRIO ---
           # O ID do seu Space no formato 'nome-usuario/nome-do-space'
           # Exemplo: 'meu-usuario/meu-chatbot-gradio'
-          space_id: 'willp01/projeto001' 
+          huggingface_repo_id:: 'willp01/projeto001' 
           
           # --- OBRIGATÓRIO ---
           # O Token de Acesso do Hugging Face. Deve ser uma Secret do GitHub.
