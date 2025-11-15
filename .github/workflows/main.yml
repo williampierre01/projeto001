@@ -22,7 +22,7 @@ jobs:
         
       # Passo 2: Sincroniza o conteúdo do seu repositório com o Space do Hugging Face
       - name: Sync to Hugging Face Space
-        uses: nateraw/huggingface-sync-action@v0.0.5
+        uses: nateraw/huggingface-sync-action@main
         with:
           # --- OBRIGATÓRIO ---
           # O ID do seu Space no formato 'nome-usuario/nome-do-space'
@@ -51,4 +51,4 @@ jobs:
       - name: 🚀 Executar Script e Fazer Upload
         run: |
           # Este é o comando que executa o seu código principal
-          python seu_script_principal.py # Substitua pelo nome real do seu script
+          app.py # Substitua pelo nome real do seu script
