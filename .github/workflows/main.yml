@@ -56,22 +56,19 @@ jobs:
           HF_TOKEN: ${{ secrets.HF }}
           REPO_ID: willp01/projeto001 # Seu Space ID
         run: |
-          # Obtém o caminho descoberto no passo 'find_cli'
+          
           HF_CLI_PATH="${{ steps.find_cli.outputs.cli_path }}"
           
           echo "Caminho CLI final: $HF_CLI_PATH"
           
-          # Testa se o executável existe no caminho descoberto
+          
           if [ -f "$HF_CLI_PATH" ]; then
             echo "Executável encontrado. Iniciando a sincronização..."
             
-            # Faz login no Hugging Face (usa o HF_TOKEN)
             $HF_CLI_PATH login --token $HF_TOKEN
 
-            # Cria o repositório (se não existir)
             $HF_CLI_PATH create-repo $REPO_ID --type space --space-sdk gradio || echo "Repo already exists"
 
-            # Sincroniza os arquivos locais para o Space.
             $HF_CLI_PATH upload $REPO_ID . --include "*" --exclude ".git*"
           else
             echo "Erro crítico: O executável hf-cli não foi encontrado mesmo após a depuração. Verifique o log do passo 'Find Real Executable Location'."
