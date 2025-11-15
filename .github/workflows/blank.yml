@@ -1,0 +1,41 @@
+name: Deploy Hugging Face Space
+
+# O workflow será acionado sempre que houver um push para a branch 'main'
+on:
+  push:
+    branches:
+      - main  # Altere para a branch principal do seu repositório, se for diferente (ex: master)
+
+# Define um conjunto de permissões (necessário para o checkout)
+permissions:
+  contents: read
+
+jobs:
+  sync-space:
+    # O runner é o ambiente onde o código será executado
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Passo 1: Clona o seu repositório GitHub (onde está este workflow)
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        
+      # Passo 2: Sincroniza o conteúdo do seu repositório com o Space do Hugging Face
+      - name: Sync to Hugging Face Space
+        uses: huggingface/actions/space-sync@v2.0.0
+        with:
+          # --- OBRIGATÓRIO ---
+          # O ID do seu Space no formato 'nome-usuario/nome-do-space'
+          # Exemplo: 'meu-usuario/meu-chatbot-gradio'
+          space_id: willp01/projeto001 
+          
+          # --- OBRIGATÓRIO ---
+          # O Token de Acesso do Hugging Face. Deve ser uma Secret do GitHub.
+          # Você deve criar uma Secret no seu repositório chamada HF_TOKEN.
+          hf_token: ${{ secrets.HF }} 
+          
+          # --- OPCIONAL ---
+          # Se você precisar sincronizar APENAS um subdiretório do seu GitHub
+          # com a raiz do seu Space, use a opção 'folder_to_sync'.
+          # Por padrão, sincroniza a raiz do GitHub.
+          # folder_to_sync: ./chatbot_folder
