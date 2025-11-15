@@ -29,22 +29,43 @@ jobs:
       - name: Install Hugging Face Hub
         run: pip install huggingface-hub
 
-      # 4. Sincroniza o repositório, usando o caminho do ambiente virtual
+      # 4. PASSO CRÍTICO: Encontra o caminho real do executável e salva como output
+      - name: Find Real Executable Location
+        id: find_cli
+        run: |
+          # Usa 'pip show' para encontrar o diretório raiz da instalação
+          INSTALL_DIR=$(pip show huggingface-hub | grep 'Location' | awk '{print $2}')
+          
+          # Assume que o executável está no subdiretório 'bin' desse local
+          REAL_BIN_PATH="$INSTALL_DIR/bin/huggingface-cli"
+          
+          # Se o executável não estiver no caminho bin/ padrão, tenta encontrá-lo via find
+          if [ ! -f "$REAL_BIN_PATH" ]; then
+             echo "Caminho padrão de binários não encontrado. Buscando..."
+             # Usa find para localizar o executável em qualquer lugar dentro da instalação
+             REAL_BIN_PATH=$(find $INSTALL_DIR -name "huggingface-cli" | head -n 1)
+          fi
+
+          # Define o caminho real como uma saída (output) para uso nos passos seguintes
+          echo "cli_path=$REAL_BIN_PATH" >> $GITHUB_OUTPUT
+          echo "Caminho real encontrado para hf-cli: $REAL_BIN_PATH"
+
+      # 5. Sincroniza o repositório usando o caminho descoberto no passo anterior
       - name: Sync to Hugging Face Space using hf-cli
         env:
           HF_TOKEN: ${{ secrets.HF }}
           REPO_ID: willp01/projeto001 # Seu Space ID
         run: |
-          # 1. Define o caminho mais provável (ambiente virtual)
-          HF_CLI_PATH="${{ env.pythonLocation }}/bin/huggingface-cli"
+          # Obtém o caminho descoberto no passo 'find_cli'
+          HF_CLI_PATH="${{ steps.find_cli.outputs.cli_path }}"
           
-          echo "Caminho CLI tentando: $HF_CLI_PATH"
+          echo "Caminho CLI final: $HF_CLI_PATH"
           
-          # 2. Testa e executa
+          # Testa se o executável existe no caminho descoberto
           if [ -f "$HF_CLI_PATH" ]; then
             echo "Executável encontrado. Iniciando a sincronização..."
             
-            # Faz login no Hugging Face
+            # Faz login no Hugging Face (usa o HF_TOKEN)
             $HF_CLI_PATH login --token $HF_TOKEN
 
             # Cria o repositório (se não existir)
@@ -53,19 +74,6 @@ jobs:
             # Sincroniza os arquivos locais para o Space.
             $HF_CLI_PATH upload $REPO_ID . --include "*" --exclude ".git*"
           else
-            # 3. Solução de fallback caso o caminho 'bin' falhe (comum em alguns ambientes Python)
-            # Tenta o caminho de usuário (que você já tentou)
-            FALLBACK_PATH="$HOME/.local/bin/huggingface-cli"
-            
-            if [ -f "$FALLBACK_PATH" ]; then
-              echo "Executável encontrado no caminho de fallback: $FALLBACK_PATH"
-              # Executa usando o fallback
-              $FALLBACK_PATH login --token $HF_TOKEN
-              $FALLBACK_PATH create-repo $REPO_ID --type space --space-sdk gradio || echo "Repo already exists"
-              $FALLBACK_PATH upload $REPO_ID . --include "*" --exclude ".git*"
-            else
-              echo "Erro crítico: O executável hf-cli não foi encontrado em nenhum local padrão ($HF_CLI_PATH ou $FALLBACK_PATH)."
-              echo "Recomendação: Execute 'pip show huggingface-hub' em um step de debug para ver o caminho de instalação real."
-              exit 1
-            fi
+            echo "Erro crítico: O executável hf-cli não foi encontrado mesmo após a depuração. Verifique o log do passo 'Find Real Executable Location'."
+            exit 1
           fi
