@@ -21,11 +21,32 @@ jobs:
         
       # Passo 2: Sincroniza o conteúdo com o Space do Hugging Face.
       # Usando a versão @v1 para evitar o erro de 'expected boolean, received string'.
-      - name: Sync to Hugging Face Space
-        uses: nateraw/huggingface-sync-action@v1 
+      - name: Sync to Hugging Face Space 
+        uses: nateraw/huggingface-sync-action@v0.0.5
         with:
-          # O ID do seu Space no formato 'nome-usuario/nome-do-space'
-          huggingface_repo_id: willp01/projeto001
-          
-          # O Token de Acesso do Hugging Face (Secret do GitHub)
-          hf_token: ${{ secrets.HF }}
+          # The github repo you are syncing from. Required.
+          github_repo_id: 'williampierre01/projeto001'
+  
+          # The Hugging Face repo id you want to sync to. (ex. 'username/reponame')
+          # A repo with this name will be created if it doesn't exist. Required.
+          huggingface_repo_id: 'willp01/projeto001'
+
+          # Hugging Face token with write access. Required.
+          # Here, we provide a token that we called `HF_TOKEN` when we added the secret to our GitHub repo.
+          hf_token: ${{ secrets.HF_TOKEN }}
+
+          # The type of repo you are syncing to: model, dataset, or space.
+          # Defaults to space.
+          repo_type: 'space'
+  
+          # If true and the Hugging Face repo doesn't already exist, it will be created
+          # as a private repo.
+          #
+          # Note: this param has no effect if the repo already exists.
+          private: false
+
+          # If repo type is space, specify a space_sdk. One of: streamlit, gradio, or static
+          #
+          # This option is especially important if the repo has not been created yet.
+          # It won't really be used if the repo already exists.
+          space_sdk: 'gradio'
