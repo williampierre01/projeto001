@@ -22,7 +22,7 @@ jobs:
         
       # Passo 2: Sincroniza o conteúdo do seu repositório com o Space do Hugging Face
       - name: Sync to Hugging Face Space
-        uses: nateraw/huggingface-sync-action
+        uses: nateraw/huggingface-sync-action@v0.0.5
         with:
           # --- OBRIGATÓRIO ---
           # O ID do seu Space no formato 'nome-usuario/nome-do-space'
