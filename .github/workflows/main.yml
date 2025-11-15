@@ -11,3 +11,4 @@ jobs:
         with:
           huggingface_repo_id: willp01/projeto001
           hf_token: ${{ secrets.HF }}
+          private: false
