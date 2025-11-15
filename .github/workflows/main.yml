@@ -37,7 +37,7 @@ jobs:
         run: |
           # USE python -m para executar o módulo como um comando
           # Isso contorna o problema do PATH.
-          python -m huggingface_cli login --token $HF_TOKEN
+          python -m huggingface_hub.commands.cli login --token $HF_TOKEN
       
           python -m huggingface_cli create-repo $REPO_ID --type space --space-sdk gradio || echo "Repo already exists"
       
