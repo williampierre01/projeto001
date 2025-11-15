@@ -37,10 +37,10 @@ jobs:
         run: |
           # USE python -m para executar o módulo como um comando
           # Isso contorna o problema do PATH.
-          python -m huggingface_hub.commands.cli login --token $HF_TOKEN
+          python -m huggingface_hub login --token $HF_TOKEN
       
-          python -m huggingface_cli create-repo $REPO_ID --type space --space-sdk gradio || echo "Repo already exists"
+          python -m huggingface_hub create-repo $REPO_ID --type space --space-sdk gradio || echo "Repo already exists"
       
            # Comando de upload (pode ser o que está causando o erro, use o módulo)
-          python -m huggingface_cli upload $REPO_ID . --include "*" --exclude ".git*"
+          python -m huggingface_hub upload $REPO_ID . --include "*" --exclude ".git*"
   
