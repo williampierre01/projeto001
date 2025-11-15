@@ -25,52 +25,26 @@ jobs:
         with:
           python-version: '3.x'
 
-      # 3. Instala a biblioteca Hugging Face Hub
-      - name: Install Hugging Face Hub
-        run: pip install huggingface-hub
+      # 3. FORÇA a instalação no diretório de usuário (~/.local/bin)
+      - name: Install Hugging Face Hub (Forced User Install)
+        run: pip install huggingface-hub --user
 
-      # 4. PASSO CRÍTICO: Encontra o caminho real do executável e salva como output
-      - name: Find Real Executable Location
-        id: find_cli
-        run: |
-          # Usa 'pip show' para encontrar o diretório raiz da instalação
-          INSTALL_DIR=$(pip show huggingface-hub | grep 'Location' | awk '{print $2}')
-          
-          # Assume que o executável está no subdiretório 'bin' desse local
-          REAL_BIN_PATH="$INSTALL_DIR/bin/huggingface-cli"
-          
-          # Se o executável não estiver no caminho bin/ padrão, tenta encontrá-lo via find
-          if [ ! -f "$REAL_BIN_PATH" ]; then
-             echo "Caminho padrão de binários não encontrado. Buscando..."
-             # Usa find para localizar o executável em qualquer lugar dentro da instalação
-             REAL_BIN_PATH=$(find $INSTALL_DIR -name "huggingface-cli" | head -n 1)
-          fi
+      # 4. PASSO CRÍTICO: Corrige o PATH do sistema para incluir o diretório de binários de usuário
+      # Este comando garante que o shell encontre o hf-cli.
+      - name: Add User Bin to PATH
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-          # Define o caminho real como uma saída (output) para uso nos passos seguintes
-          echo "cli_path=$REAL_BIN_PATH" >> $GITHUB_OUTPUT
-          echo "Caminho real encontrado para hf-cli: $REAL_BIN_PATH"
-
-      # 5. Sincroniza o repositório usando o caminho descoberto no passo anterior
+      # 5. Sincroniza o repositório usando o comando simples
       - name: Sync to Hugging Face Space using hf-cli
         env:
           HF_TOKEN: ${{ secrets.HF }}
           REPO_ID: willp01/projeto001 # Seu Space ID
         run: |
+          echo "Iniciando a sincronização com hf-cli..."
           
-          HF_CLI_PATH="${{ steps.find_cli.outputs.cli_path }}"
-          
-          echo "Caminho CLI final: $HF_CLI_PATH"
-          
-          
-          if [ -f "$HF_CLI_PATH" ]; then
-            echo "Executável encontrado. Iniciando a sincronização..."
-            
-            $HF_CLI_PATH login --token $HF_TOKEN
+          # Agora, o comando simples 'huggingface-cli' deve ser encontrado pelo PATH
+          huggingface-cli login --token $HF_TOKEN
 
-            $HF_CLI_PATH create-repo $REPO_ID --type space --space-sdk gradio || echo "Repo already exists"
+          huggingface-cli create-repo $REPO_ID --type space --space-sdk gradio || echo "Repo already exists"
 
-            $HF_CLI_PATH upload $REPO_ID . --include "*" --exclude ".git*"
-          else
-            echo "Erro crítico: O executável hf-cli não foi encontrado mesmo após a depuração. Verifique o log do passo 'Find Real Executable Location'."
-            exit 1
-          fi
+          huggingface-cli upload $REPO_ID . --include "*" --exclude ".git*"
