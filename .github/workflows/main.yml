@@ -1,54 +1,13 @@
-name: Deploy Hugging Face Space
-
-# O workflow será acionado sempre que houver um push para a branch 'main'
-on:
-  push:
-    branches:
-      - main  # Altere para a branch principal do seu repositório, se for diferente (ex: master)
-
-# Define um conjunto de permissões (necessário para o checkout)
-permissions:
-  contents: write
-
 jobs:
   sync-space:
-    # O runner é o ambiente onde o código será executado
     runs-on: ubuntu-latest
     
     steps:
-      # Passo 1: Clona o seu repositório GitHub (onde está este workflow)
       - name: Checkout Repository
         uses: actions/checkout@v4
         
-      # Passo 2: Sincroniza o conteúdo do seu repositório com o Space do Hugging Face
       - name: Sync to Hugging Face Space
-        uses: nateraw/huggingface-sync-action@main
+        uses: nateraw/huggingface-sync-action@v1 # Atualizado para v1
         with:
-          # --- OBRIGATÓRIO ---
-          # O ID do seu Space no formato 'nome-usuario/nome-do-space'
-          # Exemplo: 'meu-usuario/meu-chatbot-gradio'
-          huggingface_repo_id: willp01/projeto001 
-          
-          # --- OBRIGATÓRIO ---
-          # O Token de Acesso do Hugging Face. Deve ser uma Secret do GitHub.
-          # Você deve criar uma Secret no seu repositório chamada HF_TOKEN.
-          hf_token: ${{ secrets.HF }} 
-          private: false
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x' # Defina a versão que você usa
-
-# --- ADICIONE ESTES PASSOS ---
-
-      - name: 📦 Instalar Dependências
-        run: |
-          python -m pip install --upgrade pip
-          # Assumindo que você tem um arquivo requirements.txt
-          pip install -r requirements.txt
-
-      - name: 🚀 Executar Script e Fazer Upload
-        run: |
-          # Este é o comando que executa o seu código principal
-          app.py # Substitua pelo nome real do seu script
+          huggingface_repo_id: willp01/projeto001
+          hf_token: ${{ secrets.HF }}
