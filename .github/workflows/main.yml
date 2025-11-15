@@ -25,8 +25,12 @@ jobs:
         run: pip install huggingface-hub
 
       # --- NOVO PASSO: Adiciona o diretório de executáveis do pip ao PATH ---
+      # O $HOME é uma variável de ambiente que aponta para o diretório do usuário.
+      # Este comando adiciona o diretório de binários de instalação do pip ao PATH.
       - name: Add User Bin to PATH
         run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+        # Force a execução em um novo shell para garantir a atualização
+        shell: bash
 
       - name: Sync to Hugging Face Space using hf-cli (FINAL)
         env:
