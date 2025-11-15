@@ -19,13 +19,13 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         
-      # 2. Configura o Python (necessário para instalar o hf-cli)
+      # 2. Configura o Python
       - name: Set up Python 3.x
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
 
-      # 3. Instala a biblioteca Hugging Face Hub (que contém o hf-cli)
+      # 3. Instala a biblioteca Hugging Face Hub
       - name: Install Hugging Face Hub
         run: pip install huggingface-hub
 
@@ -36,15 +36,31 @@ jobs:
           HF_TOKEN: ${{ secrets.HF }}
           REPO_ID: willp01/projeto001 # Seu Space ID
         run: |
-          # Define o caminho absoluto do executável hf-cli usando a variável de ambiente do GA
-          HF_CLI_PATH="${{ env.pythonLocation }}/bin/huggingface-cli"
+          # Define o caminho absoluto mais provável no ambiente de usuário
+          # Esta correção final usa o caminho mais robusto para binários de usuário
+          HF_CLI_PATH="$HOME/.local/bin/huggingface-cli"
           
           echo "Caminho CLI detectado: $HF_CLI_PATH"
+          
+          # Testa se o executável existe antes de tentar rodar
+          if [ -f "$HF_CLI_PATH" ]; then
+            echo "Executável encontrado em: $HF_CLI_PATH"
+          else
+            # Se não estiver no diretório de usuário, tenta o diretório do ambiente virtual
+            HF_CLI_PATH="${{ env.pythonLocation }}/bin/huggingface-cli"
+            echo "Tentando caminho do ambiente virtual: $HF_CLI_PATH"
+            if [ -f "$HF_CLI_PATH" ]; then
+              echo "Executável encontrado em: $HF_CLI_PATH"
+            else
+              echo "Erro crítico: O executável hf-cli não foi encontrado em nenhum dos caminhos padrão. A instalação falhou ou o PATH está corrompido."
+              exit 1 # Força a falha do workflow
+            fi
+          fi
           
           # Faz login no Hugging Face (usa o HF_TOKEN)
           $HF_CLI_PATH login --token $HF_TOKEN
 
-          # Cria o repositório (se não existir). O erro de 'private' é evitado aqui.
+          # Cria o repositório (se não existir)
           $HF_CLI_PATH create-repo $REPO_ID --type space --space-sdk gradio || echo "Repo already exists"
 
           # Sincroniza os arquivos locais (do GitHub) para o Space.
