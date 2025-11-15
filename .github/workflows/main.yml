@@ -1,12 +1,10 @@
 name: Deploy Hugging Face Space
 
-# O workflow será acionado em todo push para a branch 'main'.
 on:
   push:
     branches:
       - main 
 
-# Define permissão de escrita para o checkout e sincronização.
 permissions:
   contents: write
 
@@ -15,38 +13,35 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      # Passo 1: Clona o seu repositório GitHub
+      # 1. Checkout do seu repositório GitHub
       - name: Checkout Repository
-        uses: actions/checkout@main
+        uses: actions/checkout@v4
         
-      # Passo 2: Sincroniza o conteúdo com o Space do Hugging Face.
-      # Usando a versão @v1 para evitar o erro de 'expected boolean, received string'.
-      - name: Sync to Hugging Face Space 
-        uses: nateraw/huggingface-sync-action@main
+      # 2. Configura o Python
+      - name: Set up Python 3.x
+        uses: actions/setup-python@v4
         with:
-          # The github repo you are syncing from. Required.
-          github_repo_id: 'williampierre01/projeto001'
-  
-          # The Hugging Face repo id you want to sync to. (ex. 'username/reponame')
-          # A repo with this name will be created if it doesn't exist. Required.
-          huggingface_repo_id: 'willp01/projeto001'
+          python-version: '3.x'
 
-          # Hugging Face token with write access. Required.
-          # Here, we provide a token that we called `HF_TOKEN` when we added the secret to our GitHub repo.
-          hf_token: ${{ secrets.HF }}
+      # 3. Instala a biblioteca Hugging Face
+      - name: Install Hugging Face Hub
+        run: pip install huggingface-hub
 
-          # The type of repo you are syncing to: model, dataset, or space.
-          # Defaults to space.
-          repo_type: 'space'
-  
-          # If true and the Hugging Face repo doesn't already exist, it will be created
-          # as a private repo.
-          #
-          # Note: this param has no effect if the repo already exists.
-          private: false
+      # 4. Sincroniza o repositório via Hugging Face CLI
+      # Este passo usa o token e o ID que você já tem.
+      - name: Sync to Hugging Face Space using hf-cli
+        env:
+          # Define as variáveis de ambiente necessárias
+          HF_TOKEN: ${{ secrets.HF }}
+          REPO_ID: willp01/projeto001 # Seu Space ID
+        run: |
+          # 4a. Faz login no Hugging Face (usa o HF_TOKEN)
+          huggingface-cli login --token $HF_TOKEN
 
-          # If repo type is space, specify a space_sdk. One of: streamlit, gradio, or static
-          #
-          # This option is especially important if the repo has not been created yet.
-          # It won't really be used if the repo already exists.
-          space_sdk: 'gradio'
+          # 4b. Cria o repositório (se não existir). 
+          # O erro de 'private' é evitado aqui, pois o hf-cli lida com isso corretamente.
+          huggingface-cli create-repo $REPO_ID --type space --space-sdk gradio || echo "Repo already exists"
+
+          # 4c. Sincroniza os arquivos
+          # Este comando copia os arquivos locais (do GitHub) para o Space.
+          huggingface-cli upload $REPO_ID . --include "*" --exclude ".git*"
