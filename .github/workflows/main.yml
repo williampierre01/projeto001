@@ -22,7 +22,7 @@ jobs:
       # Passo 2: Sincroniza o conteúdo com o Space do Hugging Face.
       # Usando a versão @v1 para evitar o erro de 'expected boolean, received string'.
       - name: Sync to Hugging Face Space 
-        uses: nateraw/huggingface-sync-action@v0.0.5
+        uses: nateraw/huggingface-sync-action@main
         with:
           # The github repo you are syncing from. Required.
           github_repo_id: 'williampierre01/projeto001'
