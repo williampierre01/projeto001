@@ -33,7 +33,7 @@ jobs:
           # O Token de Acesso do Hugging Face. Deve ser uma Secret do GitHub.
           # Você deve criar uma Secret no seu repositório chamada HF_TOKEN.
           hf_token: ${{ secrets.HF }} 
-          private: False
+          private: false
 
       - name: Set up Python
         uses: actions/setup-python@v4
