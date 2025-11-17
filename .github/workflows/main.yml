@@ -21,8 +21,8 @@ jobs:
 
       - name: Push to Hugging Face Space
         env:
-          HF_USERNAME: your-huggingface-username # SUBSTITUA pelo seu nome de usuário do Hugging Face
-          HF_SPACE_NAME: your-space-name # SUBSTITUA pelo nome do seu Space no Hugging Face
+          HF_USERNAME: willp01 # SUBSTITUA pelo seu nome de usuário do Hugging Face
+          HF_SPACE_NAME: projeto001 # SUBSTITUA pelo nome do seu Space no Hugging Face
           HF_TOKEN: ${{ secrets.HF_TOKEN }} # Não altere este nome, ele se refere ao secret do GitHub
         run: |
           # Adiciona o remote do Hugging Face para o seu Space
