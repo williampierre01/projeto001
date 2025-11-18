@@ -26,6 +26,12 @@ generator = pipeline(
     max_new_tokens=50,
     do_sample=False,
 )
+generation_args = { 
+    "max_new_tokens": 500, 
+    "return_full_text": False, 
+    "temperature": 0.0, 
+    "do_sample": False, 
+}
 
 # --- Configurações Iniciais ---
 TITULO = "💬 Meu chat robô"
@@ -40,7 +46,7 @@ def responder_chatbot(mensagem, historico):
     #
     # Use o modelo LLM carregado anteriormente (certifique-se de que 'generator' esteja acessível)
     try:
-        output = generator(mensagem)
+        output = generator(mensagem, generation_args)
         resposta = output[0]['generated_text']
     except Exception as e:
         print(f"Erro ao chamar o modelo LLM: {e}")
@@ -71,6 +77,7 @@ interface = gr.ChatInterface(
 
 print("\nIniciando interface Gradio...")
 interface.launch(ssr_mode=False)
+
 
 
 
