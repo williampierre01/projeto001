@@ -1,5 +1,5 @@
 ---
-title: **AI_Assistant_V8**
+title: AI_Assistant_V8
 emoji: ✨
 colorFrom: **blue-100**
 colorTo: **indigo-400**
