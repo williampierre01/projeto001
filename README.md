@@ -4,8 +4,10 @@ emoji: ✨
 colorFrom: blue
 colorTo: yellow
 sdk: gradio
-sdk_version: "5.49.1"
+sdk_version: 4.19.0
 app_file: app.py
 pinned: false
+
+gpu: true
 base_image: python:3.10-slim-cuda12.1
 ---
