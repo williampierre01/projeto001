@@ -1,7 +1,7 @@
 
 #!pip install gradio
 #!pip install transformers>=4.41.2 accelerate>=0.31.0
-
+import torch
 import gradio as gr
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 
@@ -73,3 +73,4 @@ if __name__ == "__main__":
     print("\nIniciando interface Gradio...")
 
     interface.launch()
+
