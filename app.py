@@ -70,7 +70,8 @@ interface = gr.ChatInterface(
 # --- Lançamento da Aplicação ---
 
 print("\nIniciando interface Gradio...")
-interface.launch()
+interface.launch(share=True)
+
 
 
 
