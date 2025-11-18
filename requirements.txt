@@ -3,5 +3,6 @@ gradio
 transformers
 accelerate
 pandas
-flash_attn
+https://github.com/Dao-AILab/flash-attention/releases/download/v2.7.0/flash_attn-2.7.0+cu121torch2.3cxx11abiFALSE-cp310-cp310-linux_x86_64.whl
+
 
