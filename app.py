@@ -10,7 +10,7 @@ tokenizer = AutoTokenizer.from_pretrained("microsoft/Phi-3-mini-4k-instruct")
 
 model = AutoModelForCausalLM.from_pretrained(
     "microsoft/Phi-3-mini-4k-instruct",
-    device_map="cuda",
+    device_map="auto",
     torch_dtype="auto",
     trust_remote_code=False,
 )
@@ -71,4 +71,5 @@ if __name__ == "__main__":
     # O .launch() inicia o servidor web local
     # Remova o 'if __name__ == "__main__":' se for usar no Hugging Face Spaces
     print("\nIniciando interface Gradio...")
+
     interface.launch()
