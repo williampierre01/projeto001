@@ -67,10 +67,7 @@ interface = gr.ChatInterface(
 
 # --- Lançamento da Aplicação ---
 
-if __name__ == "__main__":
-    # O .launch() inicia o servidor web local
-    # Remova o 'if __name__ == "__main__":' se for usar no Hugging Face Spaces
-    print("\nIniciando interface Gradio...")
+print("\nIniciando interface Gradio...")
+interface.launch()
 
-    interface.launch()
 
