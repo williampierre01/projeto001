@@ -1,6 +1,7 @@
+torch
 gradio
 transformers
-torch
 accelerate
 pandas
 flash_attn
+
