@@ -6,7 +6,7 @@ import gradio as gr
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 import time # Adicionar esta importação
 
-time.sleep(5) # Adicionar um atraso de 5 segundos
+time.sleep(20) # Adicionar um atraso de 5 segundos
 # Load model and tokenizer
 tokenizer = AutoTokenizer.from_pretrained("microsoft/Phi-3-mini-4k-instruct")
 
@@ -71,6 +71,7 @@ interface = gr.ChatInterface(
 
 print("\nIniciando interface Gradio...")
 interface.launch(ssr_mode=False)
+
 
 
 
