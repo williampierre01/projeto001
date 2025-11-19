@@ -38,16 +38,37 @@ TITULO = "💬 Meu chat robô"
 DESCRICAO = "Este é um template de interface de chatbot. Substitua a função 'responder_chatbot' pela integração com seu modelo de linguagem (LLM)."
 
 # --- Função Principal de Resposta do Chatbot ---
-
 def responder_chatbot(mensagem, historico):
 
+    # O histórico do chat é ignorado neste código, mas vamos usá-lo para criar o prompt.
+    
+    # 1. Crie o prompt formatado
+    # O modelo Phi-3-mini-4k-instruct usa um formato de conversação específico.
+    messages = []
+    
+    # Adicione as mensagens do histórico, se houver
+    for user_msg, model_msg in historico:
+        if user_msg:
+            messages.append({"role": "user", "content": user_msg})
+        if model_msg:
+            messages.append({"role": "assistant", "content": model_msg})
+            
+    # Adicione a mensagem atual do usuário
+    messages.append({"role": "user", "content": mensagem})
+    
+    # Use o tokenizer para aplicar o formato correto
+    prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
 
-    # === LÓGICA DO CHATBOT/MODELO ===
-    #
-    # Use o modelo LLM carregado anteriormente (certifique-se de que 'generator' esteja acessível)
+    # === LÓGICA DO CHATBOT/MODELO CORRIGIDA ===
     try:
-        output = generator(mensagem, generation_args)
+        # AQUI É A CORREÇÃO: use **generation_args para passar os parâmetros como kwargs
+        # generator(prompt) aceita 1 argumento posicional (a prompt), 
+        # e o resto como argumentos nomeados (kwargs) desempacotados
+        output = generator(prompt, **generation_args)
+        
+        # O resultado é uma lista, onde o primeiro item é o dicionário de saída
         resposta = output[0]['generated_text']
+
     except Exception as e:
         print(f"Erro ao chamar o modelo LLM: {e}")
         resposta = "Desculpe, houve um erro ao gerar a resposta. Por favor, tente novamente."
@@ -77,6 +98,7 @@ interface = gr.ChatInterface(
 
 print("\nIniciando interface Gradio...")
 interface.launch(ssr_mode=False)
+
 
 
 
