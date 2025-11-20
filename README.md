@@ -1,5 +1,5 @@
 ---
-title: AI_Assistant_V8
+title: AI_Assistant_V6
 emoji: ✨
 colorFrom: blue
 colorTo: yellow
