@@ -12,4 +12,6 @@ gpu: true
 base_image: python:3.10-slim-cuda12.1
 
 setup: bash setup.sh
+
+short_description: Powered by Generative AI.
 ---
