@@ -1,6 +1,6 @@
 ---
 title: AI_Assistant
-emoji: ✨
+emoji: 🤖
 colorFrom: blue
 colorTo: yellow
 sdk: gradio
